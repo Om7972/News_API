@@ -6,18 +6,23 @@
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
-  "keywords": ["news", "api", "express", "ejs"],
+  "keywords": [
+    "news",
+    "api",
+    "express",
+    "ejs"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Advanced News API web application with modern UI/UX",
   "dependencies": {
     "axios": "^1.13.5",
-    "compression": "^1.7.4",
+    "compression": "^1.8.1",
     "dotenv": "^16.6.1",
     "ejs": "^3.1.10",
     "express": "^4.22.1",
-    "express-rate-limit": "^7.1.5",
-    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
     "node-cache": "^5.1.2"
   },
   "devDependencies": {
