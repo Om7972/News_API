@@ -1,0 +1,40 @@
+<div class="loader" id="loader">
+  <div class="spinner"></div>
+  <p>Loading news...</p>
+</div>
+
+<div class="error" id="error" style="display: none;"></div>
+
+<div class="news-grid" id="newsGrid">
+  <% if (articles && articles.length > 0) { %>
+    <% articles.forEach(article => { %>
+      <div class="news-card">
+        <% if (article.urlToImage) { %>
+          <img src="<%= article.urlToImage %>" alt="<%= article.title %>">
+        <% } else { %>
+          <img src="https://via.placeholder.com/400x200?text=No+Image" alt="No image available">
+        <% } %>
+        <div class="news-card-content">
+          <h2><%= article.title %></h2>
+          <p><%= article.description || 'No description available.' %></p>
+          <div class="source">Source: <%= article.source.name %></div>
+          <a href="<%= article.url %>" class="read-more" target="_blank">Read More</a>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <p>No news articles found.</p>
+  <% } %>
+</div>
+
+<script>
+  // Show loader initially if no articles
+  <% if (!articles || articles.length === 0) { %>
+    document.getElementById('loader').classList.add('show');
+  <% } %>
+
+  // Hide loader after content loads
+  window.addEventListener('load', function() {
+    document.getElementById('loader').classList.remove('show');
+  });
+</script>

@@ -1,0 +1,23 @@
+{
+  "status": "ok",
+  "articles": [
+    {
+      "title": "Sample News Title 1",
+      "description": "This is a sample description for the news article. It provides a brief overview of the content.",
+      "url": "https://example.com/article1",
+      "urlToImage": "https://via.placeholder.com/400x200?text=Sample+Image+1",
+      "source": {
+        "name": "Sample Source 1"
+      }
+    },
+    {
+      "title": "Sample News Title 2",
+      "description": "Another sample description for a different news article. More details here.",
+      "url": "https://example.com/article2",
+      "urlToImage": "https://via.placeholder.com/400x200?text=Sample+Image+2",
+      "source": {
+        "name": "Sample Source 2"
+      }
+    }
+  ]
+}
