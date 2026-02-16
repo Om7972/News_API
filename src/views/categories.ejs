@@ -1,0 +1,55 @@
+<div class="categories-page">
+  <!-- Page Header -->
+  <section class="page-header">
+    <div class="container">
+      <h1>News Categories</h1>
+      <p>Explore news by category</p>
+    </div>
+  </section>
+
+  <!-- Categories Grid -->
+  <section class="categories-section">
+    <div class="container">
+      <div class="categories-grid">
+        <% if (categories && categories.length > 0) { %>
+          <% categories.forEach(category => { %>
+          <div class="category-card">
+            <div class="category-header">
+              <div class="category-icon">
+                <%= category.icon %>
+              </div>
+              <h2 class="category-title"><%= category.displayName %></h2>
+            </div>
+
+            <div class="category-preview">
+              <% if (category.articles && category.articles.length > 0) { %>
+                <% category.articles.slice(0, 2).forEach(article => { %>
+                <article class="preview-article">
+                  <h4>
+                    <a href="/article?url=<%= encodeURIComponent(article.url) %>">
+                      <%= article.title.length > 60 ? article.title.substring(0, 60) + '...' : article.title %>
+                    </a>
+                  </h4>
+                  <p><%= article.description ? article.description.substring(0, 80) + '...' : '' %></p>
+                </article>
+                <% }); %>
+              <% } else { %>
+                <p class="no-articles">No recent articles</p>
+              <% } %>
+            </div>
+
+            <div class="category-footer">
+              <a href="/categories/<%= category.name %>" class="view-category-btn">
+                View All <%= category.displayName %>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m9 18 6-6-6-6"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <% }); %>
+        <% } %>
+      </div>
+    </div>
+  </section>
+</div>
