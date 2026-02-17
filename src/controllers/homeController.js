@@ -4,6 +4,12 @@ const newsService = require('../services/newsService');
  * Home Controller - Handles home page and main news display
  */
 class HomeController {
+  constructor() {
+    this.index = this.index.bind(this);
+    this.loadMore = this.loadMore.bind(this);
+    this.getUserPreferences = this.getUserPreferences.bind(this);
+  }
+
   /**
    * Render home page with trending news
    * @param {Object} req - Express request object
@@ -30,14 +36,16 @@ class HomeController {
         articles: regularArticles,
         currentCategory: category,
         currentCountry: country,
-        userPreferences: this.getUserPreferences(req)
+        userPreferences: this.getUserPreferences(req),
+        currentPage: 'home'
       });
     } catch (error) {
       console.error('Home controller error:', error);
       res.status(500).render('error', {
         title: 'Error',
         message: 'Failed to load news. Please try again later.',
-        error: process.env.NODE_ENV === 'development' ? error : {}
+        error: process.env.NODE_ENV === 'development' ? error : {},
+        layout: false
       });
     }
   }
@@ -88,5 +96,7 @@ class HomeController {
     };
   }
 }
+
+
 
 module.exports = new HomeController();

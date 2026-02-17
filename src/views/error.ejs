@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title || 'Error' %></title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .error-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+      text-align: center;
+      padding: 2rem;
+    }
+    .error-title {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--primary-color, #E11D48);
+      margin-bottom: 1rem;
+    }
+    .error-message {
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      color: var(--text-color, #333);
+    }
+    .error-details {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      text-align: left;
+      max-width: 800px;
+      width: 100%;
+      overflow-x: auto;
+    }
+    .btn-home {
+      padding: 0.75rem 1.5rem;
+      background-color: var(--primary-color, #E11D48);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    .btn-home:hover {
+      opacity: 0.9;
+    }
+    /* Dark mode support if applicable */
+    [data-theme="dark"] .error-details {
+      background: #1e293b;
+      color: #e2e8f0;
+    }
+    [data-theme="dark"] .error-message {
+      color: #e2e8f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <h1 class="error-title">Oops! Something went wrong</h1>
+    <p class="error-message"><%= message || 'An unexpected error occurred.' %></p>
+    
+    <% if (error && Object.keys(error).length > 0) { %>
+      <div class="error-details">
+        <pre><%= JSON.stringify(error, null, 2) %></pre>
+        <% if (error.stack) { %>
+          <pre style="margin-top: 1rem; font-size: 0.8em;"><%= error.stack %></pre>
+        <% } %>
+      </div>
+    <% } %>
+
+    <a href="/" class="btn-home">Return to Home</a>
+  </div>
+</body>
+</html>

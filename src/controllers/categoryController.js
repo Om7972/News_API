@@ -9,6 +9,17 @@ class CategoryController {
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    */
+  constructor() {
+    this.show = this.show.bind(this);
+    this.index = this.index.bind(this);
+    this.getUserPreferences = this.getUserPreferences.bind(this);
+  }
+
+  /**
+   * Render category page
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async show(req, res) {
     try {
       const { category } = req.params;
@@ -19,7 +30,8 @@ class CategoryController {
       if (!validCategories.includes(category)) {
         return res.status(404).render('404', {
           title: 'Category Not Found',
-          message: `Category "${category}" does not exist.`
+          message: `Category "${category}" does not exist.`,
+          layout: false
         });
       }
 
@@ -35,7 +47,7 @@ class CategoryController {
         title: `${this.capitalizeFirst(category)} News`,
         category,
         articles,
-        currentPage: parseInt(page),
+        currentPage: 'categories',
         currentCountry: country,
         userPreferences: this.getUserPreferences(req)
       });
@@ -44,7 +56,8 @@ class CategoryController {
       res.status(500).render('error', {
         title: 'Error',
         message: 'Failed to load category news.',
-        error: process.env.NODE_ENV === 'development' ? error : {}
+        error: process.env.NODE_ENV === 'development' ? error : {},
+        layout: false
       });
     }
   }
@@ -84,14 +97,16 @@ class CategoryController {
       res.render('categories', {
         title: 'News Categories',
         categories: categoriesWithNews,
-        userPreferences: this.getUserPreferences(req)
+        userPreferences: this.getUserPreferences(req),
+        currentPage: 'categories'
       });
     } catch (error) {
       console.error('Categories controller error:', error);
       res.status(500).render('error', {
         title: 'Error',
         message: 'Failed to load categories.',
-        error: process.env.NODE_ENV === 'development' ? error : {}
+        error: process.env.NODE_ENV === 'development' ? error : {},
+        layout: false
       });
     }
   }

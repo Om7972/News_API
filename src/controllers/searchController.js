@@ -9,6 +9,19 @@ class SearchController {
    * @param {Object} req - Express request object
    * @param {Object} res - Express response object
    */
+  constructor() {
+    this.index = this.index.bind(this);
+    this.suggestions = this.suggestions.bind(this);
+    this.getUserPreferences = this.getUserPreferences.bind(this);
+    this.saveSearchHistory = this.saveSearchHistory.bind(this);
+    this.getSearchHistory = this.getSearchHistory.bind(this);
+  }
+
+  /**
+   * Render search results page
+   * @param {Object} req - Express request object
+   * @param {Object} res - Express response object
+   */
   async index(req, res) {
     try {
       const { q: query, sortBy = 'publishedAt', page = 1 } = req.query;
@@ -19,7 +32,7 @@ class SearchController {
           query: '',
           articles: [],
           sortBy,
-          currentPage: 1,
+          currentPage: 'search',
           totalResults: 0,
           userPreferences: this.getUserPreferences(req)
         });
@@ -40,7 +53,7 @@ class SearchController {
         query: query.trim(),
         articles,
         sortBy,
-        currentPage: parseInt(page),
+        currentPage: 'search',
         totalResults: articles.length,
         userPreferences: this.getUserPreferences(req)
       });
@@ -49,7 +62,8 @@ class SearchController {
       res.status(500).render('error', {
         title: 'Search Error',
         message: 'Failed to perform search. Please try again.',
-        error: process.env.NODE_ENV === 'development' ? error : {}
+        error: process.env.NODE_ENV === 'development' ? error : {},
+        layout: false
       });
     }
   }

@@ -7,6 +7,13 @@ class BookmarkController {
   constructor() {
     // In-memory storage for demo purposes
     this.bookmarks = new Map();
+
+    this.index = this.index.bind(this);
+    this.add = this.add.bind(this);
+    this.remove = this.remove.bind(this);
+    this.check = this.check.bind(this);
+    this.getUserPreferences = this.getUserPreferences.bind(this);
+    this.getUserId = this.getUserId.bind(this);
   }
 
   /**
@@ -23,14 +30,16 @@ class BookmarkController {
       res.render('bookmarks', {
         title: 'My Bookmarks',
         bookmarks: userBookmarks,
-        userPreferences: this.getUserPreferences(req)
+        userPreferences: this.getUserPreferences(req),
+        currentPage: 'bookmarks'
       });
     } catch (error) {
       console.error('Bookmark controller error:', error);
       res.status(500).render('error', {
         title: 'Error',
         message: 'Failed to load bookmarks.',
-        error: process.env.NODE_ENV === 'development' ? error : {}
+        error: process.env.NODE_ENV === 'development' ? error : {},
+        layout: false
       });
     }
   }

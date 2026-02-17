@@ -16,7 +16,7 @@ const searchRoutes = require('./src/routes/search');
 const errorHandler = require('./src/middleware/errorHandler');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Security middleware
 app.use(helmet({
@@ -48,7 +48,13 @@ app.use(express.urlencoded({ extended: true }));
 // Static files (served from src/public)
 app.use(express.static(path.join(__dirname, 'src', 'public')));
 
+const expressLayouts = require('express-ejs-layouts');
+
+// ... (imports)
+
 // View engine (views in src/views)
+app.use(expressLayouts);
+app.set('layout', 'layout');
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'src', 'views'));
 
@@ -63,7 +69,8 @@ app.use('/search', searchRoutes);
 app.use((req, res) => {
   res.status(404).render('404', {
     title: 'Page Not Found',
-    message: 'The page you are looking for does not exist.'
+    message: 'The page you are looking for does not exist.',
+    currentPage: '404'
   });
 });
 

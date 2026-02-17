@@ -1,11 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="<%= userPreferences ? userPreferences.theme : 'light' %>">
+<html lang="en"
+  data-theme="<%= (typeof userPreferences !== 'undefined' && userPreferences) ? userPreferences.theme : 'light' %>">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Stay informed with the latest news from around the world">
   <meta name="keywords" content="news, headlines, breaking news, world news, local news">
-  <title><%= title %></title>
+  <title>
+    <%= title %>
+  </title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -16,34 +20,36 @@
   <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 </head>
+
 <body>
   <!-- Navigation -->
   <%- include('partials/navbar') %>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <%- body %>
-  </main>
+    <!-- Main Content -->
+    <main class="main-content">
+      <%- body %>
+    </main>
 
-  <!-- Back to Top Button -->
-  <button id="backToTop" class="back-to-top" aria-label="Back to top">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <polyline points="18,15 12,9 6,15"></polyline>
-    </svg>
-  </button>
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18,15 12,9 6,15"></polyline>
+      </svg>
+    </button>
 
-  <!-- Toast Notifications -->
-  <div id="toastContainer" class="toast-container"></div>
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="toast-container"></div>
 
-  <!-- Scripts -->
-  <script src="/js/main.js"></script>
-  <script src="/js/theme.js"></script>
-  <script src="/js/search.js"></script>
-  <script src="/js/bookmarks.js"></script>
+    <!-- Scripts -->
+    <script src="/js/main.js"></script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/search.js"></script>
+    <script src="/js/bookmarks.js"></script>
 
-  <!-- Page-specific scripts -->
-  <% if (typeof pageScript !== 'undefined') { %>
-    <script src="/js/<%= pageScript %>.js"></script>
-  <% } %>
+    <!-- Page-specific scripts -->
+    <% if (typeof pageScript !=='undefined' ) { %>
+      <script src="/js/<%= pageScript %>.js"></script>
+      <% } %>
 </body>
+
 </html>
