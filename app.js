@@ -1,88 +1,78 @@
 const express = require('express');
-const axios = require('axios');
+const compression = require('compression');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const path = require('path');
-const fs = require('fs');
 require('dotenv').config();
 
+// Import routes from the src folder
+const homeRoutes = require('./src/routes/home');
+const articleRoutes = require('./src/routes/article');
+const bookmarkRoutes = require('./src/routes/bookmark');
+const categoryRoutes = require('./src/routes/category');
+const searchRoutes = require('./src/routes/search');
+
+// Import middleware
+const errorHandler = require('./src/middleware/errorHandler');
+
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
 
-// Set EJS as the view engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+    },
+  },
+}));
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
-// Middleware to parse URL-encoded bodies
+// Compression
+app.use(compression());
+
+// Body parsing
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Function to fetch news from NewsAPI
-async function fetchNews(query = '', category = '') {
-  const apiKey = process.env.NEWS_API_KEY;
-  if (!apiKey || apiKey === 'your_api_key_here') {
-    // Fallback to sample data
-    const sampleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'sample.json'), 'utf8'));
-    return sampleData.articles;
-  }
+// Static files (served from src/public)
+app.use(express.static(path.join(__dirname, 'src', 'public')));
 
-  let url = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`;
-  if (query) {
-    url = `https://newsapi.org/v2/everything?q=${encodeURIComponent(query)}&apiKey=${apiKey}`;
-  } else if (category) {
-    url += `&category=${category}`;
-  }
+// View engine (views in src/views)
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'src', 'views'));
 
-  try {
-    const response = await axios.get(url);
-    return response.data.articles || [];
-  } catch (error) {
-    console.error('Error fetching news:', error.message);
-    // Fallback to sample data on error
-    const sampleData = JSON.parse(fs.readFileSync(path.join(__dirname, 'data', 'sample.json'), 'utf8'));
-    return sampleData.articles;
-  }
-}
-
-// Route for home page
-app.get('/', async (req, res) => {
-  try {
-    const searchQuery = req.query.q || '';
-    const category = req.query.category || '';
-    const articles = await fetchNews(searchQuery, category);
-
-    // Render the index template
-    const indexContent = await new Promise((resolve, reject) => {
-      app.render('index', {
-        articles,
-        searchQuery,
-        category,
-        title: 'Top News Headlines'
-      }, (err, html) => {
-        if (err) reject(err);
-        else resolve(html);
-      });
-    });
-
-    // Render the layout with the index content
-    res.render('layout', {
-      body: indexContent,
-      searchQuery,
-      category,
-      title: 'Top News Headlines'
-    });
-  } catch (error) {
-    console.error('Error rendering page:', error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+// Mount routes
+app.use('/', homeRoutes);
+app.use('/article', articleRoutes);
+app.use('/bookmarks', bookmarkRoutes);
+app.use('/categories', categoryRoutes);
+app.use('/search', searchRoutes);
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).render('404', { title: 'Page Not Found' });
+  res.status(404).render('404', {
+    title: 'Page Not Found',
+    message: 'The page you are looking for does not exist.'
+  });
 });
 
-// Start the server
+// Error handling middleware
+app.use(errorHandler);
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`🚀 News API App running on http://localhost:${PORT}`);
 });
+
+module.exports = app;
