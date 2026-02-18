@@ -3,7 +3,7 @@
  * Handles category switching, infinite scroll, and view toggles
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   if (document.querySelector('.home-page')) {
     initializeHomePage();
   }
@@ -26,7 +26,7 @@ function setupCategoryPills() {
   const categoryPills = document.querySelectorAll('.category-pill');
 
   categoryPills.forEach(pill => {
-    pill.addEventListener('click', function() {
+    pill.addEventListener('click', function () {
       const category = this.dataset.category;
 
       // Update active state
@@ -88,14 +88,14 @@ function setupViewToggles() {
 
   if (!gridView || !listView || !newsGrid) return;
 
-  gridView.addEventListener('click', function() {
+  gridView.addEventListener('click', function () {
     newsGrid.classList.remove('list-view');
     gridView.classList.add('active');
     listView.classList.remove('active');
     localStorage.setItem('viewMode', 'grid');
   });
 
-  listView.addEventListener('click', function() {
+  listView.addEventListener('click', function () {
     newsGrid.classList.add('list-view');
     listView.classList.add('active');
     gridView.classList.remove('active');
@@ -120,7 +120,7 @@ function setupInfiniteScroll() {
   let currentPage = 1;
   let isLoading = false;
 
-  loadMoreBtn.addEventListener('click', async function() {
+  loadMoreBtn.addEventListener('click', async function () {
     if (isLoading) return;
 
     isLoading = true;
@@ -128,18 +128,34 @@ function setupInfiniteScroll() {
 
     try {
       currentPage++;
-      const category = window.currentCategory || 'general';
-      const country = window.currentCountry || 'us';
+      const category = (window.newsApp && window.newsApp.currentCategory) || 'general';
+      const country = (window.newsApp && window.newsApp.currentCountry) || 'us';
 
       const response = await fetch(`/load-more?category=${category}&country=${country}&page=${currentPage}`);
       const data = await response.json();
 
       if (data.success && data.articles.length > 0) {
-        appendNewsArticles(data.articles);
+        const newsArticleContainer = document.getElementById('newsGrid');
+
+        // Append new articles
+        data.articles.forEach(article => {
+          // Create a temporary container to parse HTML string
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = createArticleHTML(article).trim();
+          const newArticleElement = tempDiv.firstChild;
+
+          if (newArticleElement) {
+            newsArticleContainer.appendChild(newArticleElement);
+          }
+        });
+
+        // Re-setup hover effects for new cards
+        setupCardHoverEffects();
 
         if (data.articles.length < 10) {
           // No more articles
           loadMoreBtn.style.display = 'none';
+          showToast('All articles loaded', 'info');
         }
       } else {
         // No more articles
@@ -163,11 +179,11 @@ function setupCardHoverEffects() {
   const newsCards = document.querySelectorAll('.news-card');
 
   newsCards.forEach(card => {
-    card.addEventListener('mouseenter', function() {
+    card.addEventListener('mouseenter', function () {
       this.style.transform = 'translateY(-8px) rotateX(5deg)';
     });
 
-    card.addEventListener('mouseleave', function() {
+    card.addEventListener('mouseleave', function () {
       this.style.transform = 'translateY(0) rotateX(0)';
     });
   });
@@ -220,7 +236,8 @@ function createArticleHTML(article) {
           onerror="this.src='/images/placeholder.jpg'"
         >
         <div class="card-overlay">
-          <button class="bookmark-btn card-bookmark" data-article='${JSON.stringify(article).replace(/'/g, "&apos;")}'>
+          <!-- Store article data in a separate script tag or encoded attribute to avoid syntax errors -->
+          <button class="bookmark-btn card-bookmark" data-article-url="${article.url}" onclick="handleBookmarkClick(event, '${encodeURIComponent(JSON.stringify(article))}')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m19 21-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2Z"/>
             </svg>
@@ -259,3 +276,40 @@ function showToast(message, type = 'info') {
     window.showToast(message, type);
   }
 }
+
+/**
+ * Handle bookmark click
+ * @param {Event} event - Click event
+ * @param {string} encodedArticle - URI encoded article JSON
+ */
+window.handleBookmarkClick = function (event, encodedArticle) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  try {
+    const article = JSON.parse(decodeURIComponent(encodedArticle));
+
+    // Fallback: manually fetch add endpoint
+    fetch('/bookmarks/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ article })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showToast('Article bookmarked!', 'success');
+        } else {
+          showToast(data.message || 'Failed to bookmark', 'error');
+        }
+      })
+      .catch(err => {
+        console.error('Bookmark error:', err);
+        showToast('Failed to bookmark', 'error');
+      });
+  } catch (e) {
+    console.error('Error handling bookmark click', e);
+  }
+};

@@ -43,7 +43,19 @@ class NewsService {
       });
 
       if (response.data.status === 'ok') {
-        const articles = response.data.articles || [];
+        let articles = response.data.articles || [];
+
+        // Filter out removed articles and normalize data
+        articles = articles.filter(article =>
+          article.title !== '[Removed]' &&
+          article.source.name !== '[Removed]'
+        ).map(article => ({
+          ...article,
+          urlToImage: article.urlToImage || '/images/placeholder.jpg',
+          description: article.description || 'No description available for this news article.',
+          author: article.author || article.source.name || 'Unknown Author'
+        }));
+
         cache.set(cacheKey, articles);
         console.log('📰 Fetched fresh news data');
         return articles;
@@ -92,7 +104,19 @@ class NewsService {
       });
 
       if (response.data.status === 'ok') {
-        const articles = response.data.articles || [];
+        let articles = response.data.articles || [];
+
+        // Filter out removed articles and normalize data
+        articles = articles.filter(article =>
+          article.title !== '[Removed]' &&
+          article.source.name !== '[Removed]'
+        ).map(article => ({
+          ...article,
+          urlToImage: article.urlToImage || '/images/placeholder.jpg',
+          description: article.description || 'No description available for this news article.',
+          author: article.author || article.source.name || 'Unknown Author'
+        }));
+
         cache.set(cacheKey, articles);
         return articles;
       } else {

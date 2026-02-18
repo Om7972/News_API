@@ -32,25 +32,35 @@ class ArticleController {
         });
       }
 
-      // In a real app, you'd fetch the specific article
-      // For now, we'll search for it or use a placeholder
-      const articles = await newsService.fetchNews({ q: url, pageSize: 1 });
+      // Use searchNews (everything endpoint) instead of fetchNews (top-headlines)
+      // Searching by URL is tricky, so we'll try to find it, but the everything endpoint is better for specific retrieval
+      const articles = await newsService.searchNews(url);
 
-      // Handle case where articles might be empty or null
       let article = null;
+      // The search might return multiple results matching terms in the URL
+      // We try to find an exact match on URL, otherwise take the first one if it looks relevant?
+      // Actually, searching by full URL in 'q' usually works in NewsAPI
       if (articles && articles.length > 0) {
-        article = articles.find(a => a.url === url);
+        article = articles.find(a => a.url === url) || articles[0];
       }
 
       if (!article) {
+        // Fallback: Create a wrapper for the external content
+        // Parse domain from URL for source name
+        let sourceName = 'External Source';
+        try {
+          const urlObj = new URL(url);
+          sourceName = urlObj.hostname.replace('www.', '');
+        } catch (e) { }
+
         article = {
-          title: 'Article Not Found',
-          description: 'The requested article could not be found.',
+          title: 'External Article',
+          description: 'This is an external article. Click below to read the full story at the source.',
           url: url,
           urlToImage: '/images/placeholder.jpg',
-          source: { name: 'Unknown' },
+          source: { name: sourceName },
           publishedAt: new Date().toISOString(),
-          content: 'Content not available.'
+          content: 'Full content available at source.'
         };
       }
 

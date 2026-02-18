@@ -47,7 +47,7 @@
     <script src="/js/bookmarks.js"></script>
 
     <!-- Page-specific scripts -->
-    <% if (typeof pageScript !=='undefined' ) { %>
+    <% if (typeof pageScript !=='undefined' && !['main', 'theme' , 'search' , 'bookmarks' ].includes(pageScript)) { %>
       <script src="/js/<%= pageScript %>.js"></script>
       <% } %>
 </body>

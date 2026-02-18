@@ -3,7 +3,7 @@
  * Handles adding, removing, and managing bookmarks
  */
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   initializeBookmarks();
 });
 
@@ -47,15 +47,15 @@ async function handleBookmarkClick(e) {
     if (isBookmarked) {
       await removeBookmark(article.url);
       updateBookmarkButton(button, false);
-      showToast('Article removed from bookmarks', 'info');
+      displayToast('Article removed from bookmarks', 'info');
     } else {
       await addBookmark(article);
       updateBookmarkButton(button, true);
-      showToast('Article added to bookmarks!', 'success');
+      displayToast('Article added to bookmarks!', 'success');
     }
   } catch (error) {
     console.error('Bookmark error:', error);
-    showToast('Failed to update bookmark', 'error');
+    displayToast('Failed to update bookmark', 'error');
   }
 }
 
@@ -154,9 +154,31 @@ function updateBookmarkButton(button, isBookmarked) {
  * @param {string} message - Toast message
  * @param {string} type - Toast type
  */
-function showToast(message, type = 'info') {
-  if (window.showToast) {
+/**
+ * Display toast notification
+ * @param {string} message - Toast message
+ * @param {string} type - Toast type
+ */
+function displayToast(message, type = 'info') {
+  if (typeof window.showToast === 'function' && window.showToast !== displayToast) {
     window.showToast(message, type);
+  } else {
+    // Fallback if main.js hasn't loaded
+    console.log(`[${type}] ${message}`);
+    // Create simple toast fallback
+    const container = document.getElementById('toastContainer') || document.body;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    toast.style.position = 'fixed';
+    toast.style.top = '20px';
+    toast.style.right = '20px';
+    toast.style.padding = '1rem';
+    toast.style.background = 'white';
+    toast.style.border = '1px solid black';
+    toast.style.zIndex = '9999';
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
   }
 }
 

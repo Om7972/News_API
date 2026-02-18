@@ -25,8 +25,10 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", 'data:', 'https:'],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Added unsafe-eval to fix the error
+      scriptSrcAttr: ["'unsafe-inline'"], // Added to allow inline event handlers
+      imgSrc: ["'self'", 'data:', 'https:', 'http:'], // Added http: to allow placeholder images over http
+      connectSrc: ["'self'", 'https://newsapi.org'], // Allow connections to NewsAPI
     },
   },
 }));
@@ -34,7 +36,7 @@ app.use(helmet({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 1000, // limit each IP to 1000 requests per windowMs
 });
 app.use(limiter);
 
