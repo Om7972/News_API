@@ -297,7 +297,13 @@ window.handleBookmarkClick = function (event, encodedArticle) {
       },
       body: JSON.stringify({ article })
     })
-      .then(res => res.json())
+      .then(async res => {
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.message || `Server error: ${res.status}`);
+        }
+        return res.json();
+      })
       .then(data => {
         if (data.success) {
           showToast('Article bookmarked!', 'success');
@@ -307,9 +313,10 @@ window.handleBookmarkClick = function (event, encodedArticle) {
       })
       .catch(err => {
         console.error('Bookmark error:', err);
-        showToast('Failed to bookmark', 'error');
+        showToast(err.message || 'Failed to bookmark', 'error');
       });
   } catch (e) {
     console.error('Error handling bookmark click', e);
+    showToast('Invalid article data', 'error');
   }
 };

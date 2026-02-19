@@ -53,7 +53,7 @@ class NewsService {
           ...article,
           urlToImage: article.urlToImage || '/images/placeholder.jpg',
           description: article.description || 'No description available for this news article.',
-          author: article.author || article.source.name || 'Unknown Author'
+          author: article.author || (article.source && article.source.name) || 'Unknown Author'
         }));
 
         cache.set(cacheKey, articles);
@@ -114,7 +114,7 @@ class NewsService {
           ...article,
           urlToImage: article.urlToImage || '/images/placeholder.jpg',
           description: article.description || 'No description available for this news article.',
-          author: article.author || article.source.name || 'Unknown Author'
+          author: article.author || (article.source && article.source.name) || 'Unknown Author'
         }));
 
         cache.set(cacheKey, articles);

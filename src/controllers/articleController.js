@@ -41,7 +41,8 @@ class ArticleController {
       // We try to find an exact match on URL, otherwise take the first one if it looks relevant?
       // Actually, searching by full URL in 'q' usually works in NewsAPI
       if (articles && articles.length > 0) {
-        article = articles.find(a => a.url === url) || articles[0];
+        // Strict lookup: only accept exact URL match to avoid showing unrelated articles
+        article = articles.find(a => a.url === url);
       }
 
       if (!article) {
@@ -79,7 +80,8 @@ class ArticleController {
         readingTime,
         relatedArticles,
         userPreferences: this.getUserPreferences(req),
-        currentPage: 'article'
+        currentPage: 'article',
+        pageScript: 'article'
       });
     } catch (error) {
       console.error('Article controller error:', error);

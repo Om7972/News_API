@@ -43,12 +43,17 @@ class CategoryController {
         pageSize: 20
       });
 
-      res.render('category', {
+      // Split for featured article
+      const featuredArticle = articles.length > 0 ? articles[0] : null;
+      const regularArticles = articles.length > 0 ? articles.slice(1) : [];
+
+      res.render('home', {
         title: `${this.capitalizeFirst(category)} News`,
-        category,
-        articles,
-        currentPage: 'categories',
+        featuredArticle,
+        articles: regularArticles,
+        currentCategory: category,
         currentCountry: country,
+        currentPage: 'categories',
         userPreferences: this.getUserPreferences(req)
       });
     } catch (error) {

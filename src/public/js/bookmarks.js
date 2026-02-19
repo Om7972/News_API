@@ -169,6 +169,11 @@ function displayToast(message, type = 'info') {
     const container = document.getElementById('toastContainer') || document.body;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
+    // Accessibility attributes
+    toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    toast.setAttribute('aria-live', type === 'error' ? 'assertive' : 'polite');
+    toast.setAttribute('aria-atomic', 'true');
+
     toast.textContent = message;
     toast.style.position = 'fixed';
     toast.style.top = '20px';

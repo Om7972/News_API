@@ -4,7 +4,7 @@
  */
 
 // DOM Content Loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   initializeApp();
 });
 
@@ -16,6 +16,31 @@ function initializeApp() {
   setupMobileMenu();
   setupSmoothScrolling();
   setupLazyLoading();
+  setupGlobalHandlers();
+}
+
+/**
+ * Setup global event handlers (images, back buttons)
+ */
+function setupGlobalHandlers() {
+  // Global error handler for images (capture phase)
+  document.addEventListener('error', function (e) {
+    if (e.target.tagName.toLowerCase() === 'img') {
+      // Avoid infinite loop if placeholder fails
+      if (e.target.src.includes('placeholder.jpg')) return;
+
+      e.target.src = '/images/placeholder.jpg';
+      e.target.alt = 'Image not found';
+    }
+  }, true);
+
+  // Back buttons
+  const backBtns = document.querySelectorAll('[data-action="back"]');
+  backBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      window.history.back();
+    });
+  });
 }
 
 /**
@@ -27,7 +52,7 @@ function setupBackToTop() {
   if (!backToTopBtn) return;
 
   // Show/hide button based on scroll position
-  window.addEventListener('scroll', function() {
+  window.addEventListener('scroll', function () {
     if (window.pageYOffset > 300) {
       backToTopBtn.classList.add('show');
     } else {
@@ -36,7 +61,7 @@ function setupBackToTop() {
   });
 
   // Scroll to top when clicked
-  backToTopBtn.addEventListener('click', function() {
+  backToTopBtn.addEventListener('click', function () {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -53,7 +78,7 @@ function setupMobileMenu() {
 
   if (!mobileMenuToggle || !mobileMenu) return;
 
-  mobileMenuToggle.addEventListener('click', function() {
+  mobileMenuToggle.addEventListener('click', function () {
     mobileMenu.classList.toggle('show');
 
     // Animate hamburger icon
@@ -70,7 +95,7 @@ function setupMobileMenu() {
   });
 
   // Close menu when clicking outside
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (!mobileMenuToggle.contains(e.target) && !mobileMenu.contains(e.target)) {
       mobileMenu.classList.remove('show');
       resetHamburgerIcon();
@@ -98,7 +123,7 @@ function setupSmoothScrolling() {
   const anchorLinks = document.querySelectorAll('a[href^="#"]');
 
   anchorLinks.forEach(link => {
-    link.addEventListener('click', function(e) {
+    link.addEventListener('click', function (e) {
       e.preventDefault();
 
       const targetId = this.getAttribute('href').substring(1);
@@ -162,8 +187,15 @@ function showToast(message, type = 'info') {
   toast.innerHTML = `
     <span class="toast-icon">${icons[type] || icons.info}</span>
     <span class="toast-message">${message}</span>
-    <button class="toast-close" onclick="this.parentElement.remove()">×</button>
   `;
+
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'toast-close';
+  closeBtn.innerText = '×';
+  closeBtn.addEventListener('click', () => {
+    if (toast.parentElement) toast.remove();
+  });
+  toast.appendChild(closeBtn);
 
   toastContainer.appendChild(toast);
 
@@ -206,7 +238,7 @@ function debounce(func, wait) {
  */
 function throttle(func, limit) {
   let inThrottle;
-  return function() {
+  return function () {
     const args = arguments;
     const context = this;
     if (!inThrottle) {

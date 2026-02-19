@@ -120,7 +120,7 @@
                 <article class="news-card">
                   <div class="card-image">
                     <img src="<%= article.urlToImage || '/images/placeholder.jpg' %>" alt="<%= article.title %>"
-                      loading="lazy" onerror="this.src='/images/placeholder.jpg'">
+                      loading="lazy">
                     <div class="card-overlay">
                       <button class="bookmark-btn card-bookmark" data-article='<%= JSON.stringify(article) %>'>
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -133,7 +133,7 @@
                   <div class="card-content">
                     <div class="card-meta">
                       <span class="card-source">
-                        <%= article.source.name %>
+                        <%= (article.source && article.source.name) || 'Unknown Source' %>
                       </span>
                       <span class="card-date">
                         <%= new Date(article.publishedAt).toLocaleDateString() %>

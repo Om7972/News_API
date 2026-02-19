@@ -25,9 +25,9 @@ app.use(helmet({
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Added unsafe-eval to fix the error
-      scriptSrcAttr: ["'unsafe-inline'"], // Added to allow inline event handlers
-      imgSrc: ["'self'", 'data:', 'https:', 'http:'], // Added http: to allow placeholder images over http
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrcAttr: ["'none'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
       connectSrc: ["'self'", 'https://newsapi.org'], // Allow connections to NewsAPI
     },
   },
